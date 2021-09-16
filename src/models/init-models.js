@@ -1,12 +1,13 @@
 import _sequelize from "sequelize";
 const DataTypes = _sequelize.DataTypes;
-import _tb_matricula from  "./tb_matricula.js";
+import _tb_produto from "./tb_produto.js"
 
 export default function initModels(sequelize) {
-  var tb_matricula = _tb_matricula.init(sequelize, DataTypes);
+  var tb_produto = _tb_produto.init(sequelize, DataTypes);
 
 
   return {
-    tb_matricula,
+    tb_produto,
   };
 }
+ 

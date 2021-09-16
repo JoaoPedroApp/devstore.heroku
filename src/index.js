@@ -17,30 +17,37 @@ app.get('/produto', async (req, resp) => {
 
 app.post('/produto', async (req, resp) => {
     try {
-        let {  nome, categoria, preco, avaliacao, produto, estoque, imagem  } = req.body;
+        let {  nome, categoria, precod, precopor, avaliacao, produto, estoque, imagem, ativo,   } = req.body;
 
-        if (nome == '' || chamada == '' || curso == '' || turma == '')
+        if (nome == '' || categoria == '' || precod == '' || precopor == '' || avaliacao == '' || produto == '' || estoque == '' || imagem == '')
             return resp.send({ erro: ' Preencha todos os campos!' })
 
         if (nome.length < 4 || curso.length < 4 || turma.length < 4)
             return resp.send({ erro: ' Insira mais que 4 caracteres!' });
 
 
-        let chamadaRepetida = await db.tb_produto.findOne({ where: { nr_chamada: chamada } })
-        let turmaRepetida = await db.tb_produto.findOne({ where: { nm_produto: produto } })
-        if (chamadaRepetida != null && turmaRepetida != null)
-            return resp.send({ erro: 'O número de Chamada já existe nesta turma!' });
+        
+        let ProdutoRepetido = await db.tb_produto.findOne({ where: { nm_produto: produto } })
+        if (ProdutoRepetido != null)
+            return resp.send({ erro: 'O produto já existe nesta turma!' });
 
 
         if (chamada <= 0)
             return resp.send({ erro: ' Números negativos não são permitidos' });
         
 
-        let r = await db.tb_matricula.create({
+        let r = await db.tb_produto.create({
             nm_produto: nome,
             ds_categoria: categoria,
-            nm_curso: curso,
-            nm_turma: turma
+            vl_preco_de: precod,
+            vl_preco_por: precopor,
+            vl_avaliacao: avaliacao,
+            ds_produto: produto,
+            qtd_estoque: estoque,
+            img_produto: imagem,
+            bt_ativo : ativo,
+            dt_inclusao: new Date()
+
         })
 
         resp.send(r);
@@ -52,33 +59,37 @@ app.post('/produto', async (req, resp) => {
 
 app.put('/produto/:id', async (req, resp) => {
     try {
-        let {  nome, categoria, preco, avaliacao, produto, estoque, imagem  } = req.body;
+        let { nome, categoria, precod, precopor, avaliacao, produto, estoque, imagem  } = req.body;
         let { id } = req.params;
 
-        if (nome == '' || categoria == '' || preco == '' || avaliacao == '' || produto == '' || estoque == '' || imagem == '')
+        if (nome == '' || categoria == '' || precod == '' || precopor == '' || avaliacao == '' || produto == '' || estoque == '' || imagem == '')
             return resp.send({ erro: ' Preencha todos os campos!' })
 
-        if (nome.length < 4 || curso.length < 4 || turma.length < 4)
+        if (nome.length < 5 || curso.length < 5 || turma.length < 5)
             return resp.send({ erro: ' Insira mais que 4 caracteres!' });
 
-        let chamadaRepetida = await db.tb_matricula.findOne({ where: { nr_chamada: chamada } })
-        let turmaRepetida = await db.tb_matricula.findOne({ where: { nm_turma: turma } })
-        if (chamadaRepetida != null && turmaRepetida != null)
+        let ProdutoRepetido = await db.tb_produto.findOne({ where: { nm_turma: turma } })
+        if ( ProdutoRepetido != null)
             return resp.send({ erro: 'O número de Chamada já existe nesta turma!' });
   
         if (chamada <= 0)
             return resp.send({ erro: ' Números negativos não são permitidos' });
 
 
-        let r = await db.tb_matricula.update(
+        let r = await db.tb_produto.update(
             {
-                nm_aluno: nome,
-                nr_chamada: chamada,
-                nm_curso: curso,
-                nm_turma: turma
+            nm_produto: nome,
+            ds_categoria: categoria,
+            vl_preco_de: precod,
+            vl_preco_por: precopor,
+            vl_avaliacao: avaliacao,
+            ds_produto: produto,
+            qtd_estoque: estoque,
+            img_produto: imagem,
+            bt_ativo: ativo,
             },
             {
-                where: { id_matricula: id }
+                where: { id_produto: id }
             }
         )
         resp.sendStatus(200);
@@ -91,7 +102,7 @@ app.delete('/produto/:id', async (req, resp) => {
     try {
         let { id } = req.params;
 
-        let r = await db.tb_produto.destroy({ where: { id_matricula: id } })
+        let r = await db.tb_produto.destroy({ where: { id_produto: id } })
         resp.sendStatus(200);
     } catch (e) {
         resp.send({ erro: e.toString() })
