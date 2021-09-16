@@ -17,26 +17,24 @@ app.get('/produto', async (req, resp) => {
 
 app.post('/produto', async (req, resp) => {
     try {
-        let {  nome, categoria, precod, precopor, avaliacao, produto, estoque, imagem, ativo,   } = req.body;
+        let {  nome, categoria, precod, precopor, avaliacao,  estoque, imagem, ativo, dt_inclusao } = req.body;
 
-        if (nome == '' || categoria == '' || precod == '' || precopor == '' || avaliacao == '' || produto == '' || estoque == '' || imagem == '')
+        if (nome == '' || categoria == '' || precod == '' || precopor == '' || avaliacao == '' ||  estoque == '' || imagem == '' ||  ativo == '' || dt_inclusao == '')
             return resp.send({ erro: ' Preencha todos os campos!' })
 
-        if (nome.length < 4 || curso.length < 4 || turma.length < 4)
+        if (nome.length < 4 )
             return resp.send({ erro: ' Insira mais que 4 caracteres!' });
-
-
         
-        let ProdutoRepetido = await db.tb_produto.findOne({ where: { nm_produto: produto } })
+        let ProdutoRepetido = await db.tb_produto.findOne({ where: { nm_produto: nome } })
         if (ProdutoRepetido != null)
-            return resp.send({ erro: 'O produto já existe nesta turma!' });
+        return resp.send({ erro: 'O produto já existe nesta turma!' });
 
-
-        if (chamada <= 0)
+        if (precod <= 0 || precopor <= 0 || avaliacao <= 0 || estoque <= 0  )
             return resp.send({ erro: ' Números negativos não são permitidos' });
         
 
-        let r = await db.tb_produto.create({
+        let r = await db.tb_produto.create(
+            {
             nm_produto: nome,
             ds_categoria: categoria,
             vl_preco_de: precod,
@@ -48,7 +46,11 @@ app.post('/produto', async (req, resp) => {
             bt_ativo : ativo,
             dt_inclusao: new Date()
 
-        })
+            }, 
+            {
+                where: { id_produto: id }
+            }
+        )
 
         resp.send(r);
     } catch (e) {
@@ -59,20 +61,20 @@ app.post('/produto', async (req, resp) => {
 
 app.put('/produto/:id', async (req, resp) => {
     try {
-        let { nome, categoria, precod, precopor, avaliacao, produto, estoque, imagem  } = req.body;
+        let { nome, categoria, precod, precopor, avaliacao,  estoque, imagem , ativo } = req.body;
         let { id } = req.params;
 
-        if (nome == '' || categoria == '' || precod == '' || precopor == '' || avaliacao == '' || produto == '' || estoque == '' || imagem == '')
+        if (nome == '' || categoria == '' || precod == '' || precopor == '' || avaliacao == '' ||  estoque == '' || imagem == ''||  ativo == '' || dt_inclusao == '')
             return resp.send({ erro: ' Preencha todos os campos!' })
 
-        if (nome.length < 5 || curso.length < 5 || turma.length < 5)
+        if (nome.length < 5 )
             return resp.send({ erro: ' Insira mais que 4 caracteres!' });
 
-        let ProdutoRepetido = await db.tb_produto.findOne({ where: { nm_turma: turma } })
+        let ProdutoRepetido = await db.tb_produto.findOne({ where: { nm_produto: nome} })
         if ( ProdutoRepetido != null)
-            return resp.send({ erro: 'O número de Chamada já existe nesta turma!' });
+            return resp.send({ erro: 'O número do Produto já existe nesta turma!' });
   
-        if (chamada <= 0)
+        if (precod <= 0 || precopor <= 0 || avaliacao <= 0 || estoque <= 0 )
             return resp.send({ erro: ' Números negativos não são permitidos' });
 
 
@@ -101,7 +103,6 @@ app.put('/produto/:id', async (req, resp) => {
 app.delete('/produto/:id', async (req, resp) => {
     try {
         let { id } = req.params;
-
         let r = await db.tb_produto.destroy({ where: { id_produto: id } })
         resp.sendStatus(200);
     } catch (e) {
@@ -111,4 +112,4 @@ app.delete('/produto/:id', async (req, resp) => {
 
 
 app.listen(process.env.PORT,
-            x => console.log(`Server up at port ${process.env.PORT}`))
+            x => console.log(`Subiui parceiro na porta ${process.env.PORT}`))
