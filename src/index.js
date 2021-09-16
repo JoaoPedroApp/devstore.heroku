@@ -6,18 +6,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/matricula', async (req, resp) => {
+app.get('/produto', async (req, resp) => {
     try {
-        let r = await db.tb_matricula.findAll({ order: [[ 'id_matricula', 'desc' ]] });
+        let r = await db.tb_produto.findAll({ order: [[ 'id_produto', 'desc' ]] });
         resp.send(r);
     } catch (e) {
         resp.send({ erro: e.toString() })
     }
 })
 
-app.post('/matricula', async (req, resp) => {
+app.post('/produto', async (req, resp) => {
     try {
-        let { nome, chamada, curso, turma } = req.body;
+        let {  nome, categoria, preco, avaliacao, produto, estoque, imagem  } = req.body;
 
         if (nome == '' || chamada == '' || curso == '' || turma == '')
             return resp.send({ erro: ' Preencha todos os campos!' })
@@ -26,8 +26,8 @@ app.post('/matricula', async (req, resp) => {
             return resp.send({ erro: ' Insira mais que 4 caracteres!' });
 
 
-        let chamadaRepetida = await db.tb_matricula.findOne({ where: { nr_chamada: chamada } })
-        let turmaRepetida = await db.tb_matricula.findOne({ where: { nm_turma: turma } })
+        let chamadaRepetida = await db.tb_produto.findOne({ where: { nr_chamada: chamada } })
+        let turmaRepetida = await db.tb_produto.findOne({ where: { nm_produto: produto } })
         if (chamadaRepetida != null && turmaRepetida != null)
             return resp.send({ erro: 'O número de Chamada já existe nesta turma!' });
 
@@ -37,8 +37,8 @@ app.post('/matricula', async (req, resp) => {
         
 
         let r = await db.tb_matricula.create({
-            nm_aluno: nome,
-            nr_chamada: chamada,
+            nm_produto: nome,
+            ds_categoria: categoria,
             nm_curso: curso,
             nm_turma: turma
         })
@@ -50,12 +50,12 @@ app.post('/matricula', async (req, resp) => {
     }
 })
 
-app.put('/matricula/:id', async (req, resp) => {
+app.put('/produto/:id', async (req, resp) => {
     try {
-        let { nome, chamada, curso, turma } = req.body;
+        let {  nome, categoria, preco, avaliacao, produto, estoque, imagem  } = req.body;
         let { id } = req.params;
 
-        if (nome == '' || chamada == '' || curso == '' || turma == '')
+        if (nome == '' || categoria == '' || preco == '' || avaliacao == '' || produto == '' || estoque == '' || imagem == '')
             return resp.send({ erro: ' Preencha todos os campos!' })
 
         if (nome.length < 4 || curso.length < 4 || turma.length < 4)
@@ -87,11 +87,11 @@ app.put('/matricula/:id', async (req, resp) => {
     }
 })
 
-app.delete('/matricula/:id', async (req, resp) => {
+app.delete('/produto/:id', async (req, resp) => {
     try {
         let { id } = req.params;
 
-        let r = await db.tb_matricula.destroy({ where: { id_matricula: id } })
+        let r = await db.tb_produto.destroy({ where: { id_matricula: id } })
         resp.sendStatus(200);
     } catch (e) {
         resp.send({ erro: e.toString() })
